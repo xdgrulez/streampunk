@@ -53,43 +53,4 @@ public class Cluster {
         }
         return describeClusterResultRec;
     }
-
-    //
-
-    public static List<String> listTopics(String clusterString) {
-        var listTopicsResult = AdminClientEnum.INSTANCE.get(clusterString)
-                .listTopics();
-        Set<String> topicStringSet;
-        try {
-            topicStringSet = listTopicsResult.names().get();
-        } catch (InterruptedException e) {
-            throw new InterruptedRuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new ExecutionRuntimeException(e);
-        }
-        //
-        return topicStringSet
-                .stream()
-                .sorted()
-                .collect(Collectors.toList());
-    }
-
-    public static List<String> listGroups(String clusterString) {
-        var listConsumerGroupsResult = AdminClientEnum.INSTANCE.get(clusterString)
-                .listConsumerGroups();
-        Collection<ConsumerGroupListing> consumerGroupListingCollection;
-        try {
-            consumerGroupListingCollection = listConsumerGroupsResult.all().get();
-        } catch (InterruptedException e) {
-            throw new InterruptedRuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new ExecutionRuntimeException(e);
-        }
-        //
-        return consumerGroupListingCollection
-                .stream()
-                .map(ConsumerGroupListing::groupId)
-                .sorted()
-                .collect(Collectors.toList());
-    }
 }

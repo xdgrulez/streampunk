@@ -2,7 +2,6 @@ package org.xdgrulez.streampunk.test;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.xdgrulez.streampunk.addon.Replicate;
-import org.xdgrulez.streampunk.addon.TopicExt;
 import org.xdgrulez.streampunk.admin.Group;
 import org.xdgrulez.streampunk.admin.Topic;
 import org.xdgrulez.streampunk.consumer.ConsumerString;
@@ -22,13 +21,13 @@ public class ReplicateTest {
     //@Test
     public void testReplicateTopic() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
         Topic.create("local", "testtopic1", 1, 1, null);
         //
-        if (TopicExt.exists("local", "testtopic2")) {
+        if (Topic.exists("local", "testtopic2")) {
             Topic.delete("local", "testtopic2", false);
             Thread.sleep(1000);
         }
@@ -45,20 +44,20 @@ public class ReplicateTest {
                 null,
                 true);
         // Check whether the replicated topics exist
-        assertTrue(TopicExt.exists("local", "testtopic1.copy"));
-        assertTrue(TopicExt.exists("local", "testtopic2.copy"));
+        assertTrue(Topic.exists("local", "testtopic1.copy"));
+        assertTrue(Topic.exists("local", "testtopic2.copy"));
     }
 
     //@Test
     public void testReplicateTopicContent() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
         Topic.create("local", "testtopic1", 1, 1, null);
         //
-        if (TopicExt.exists("local", "testtopic2")) {
+        if (Topic.exists("local", "testtopic2")) {
             Topic.delete("local", "testtopic2", false);
             Thread.sleep(1000);
         }
@@ -111,13 +110,13 @@ public class ReplicateTest {
 //    @Test
     public void testReplicateTopicContentTargetTopicsDifferentNumberOfPartitions() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
         Topic.create("local", "testtopic1", 2, 1, null);
         //
-        if (TopicExt.exists("local", "testtopic2")) {
+        if (Topic.exists("local", "testtopic2")) {
             Topic.delete("local", "testtopic2", false);
             Thread.sleep(1000);
         }
@@ -175,13 +174,13 @@ public class ReplicateTest {
     //@Test
     public void testReplicateConsumerGroups() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
         Topic.create("local", "testtopic1", 1, 1, null);
         //
-        if (TopicExt.exists("local", "testtopic2")) {
+        if (Topic.exists("local", "testtopic2")) {
             Topic.delete("local", "testtopic2", false);
             Thread.sleep(1000);
         }
@@ -291,7 +290,7 @@ public class ReplicateTest {
     //@Test
     public void testReplicateConsumerGroupsEmptyTopic() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
@@ -331,7 +330,7 @@ public class ReplicateTest {
     //@Test
     public void testReplicateConsumerGroupsWhiteList() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
@@ -410,7 +409,7 @@ public class ReplicateTest {
     //@Test
     public void testReplicateConsumerGroupsWhiteRegexp() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
@@ -489,7 +488,7 @@ public class ReplicateTest {
     //@Test
     public void testReplicateConsumerGroupsBlackList() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
@@ -568,7 +567,7 @@ public class ReplicateTest {
     //@Test
     public void testReplicateConsumerGroupsBlackRegexp() throws InterruptedException {
         // Create test topics
-        if (TopicExt.exists("local", "testtopic1")) {
+        if (Topic.exists("local", "testtopic1")) {
             Topic.delete("local", "testtopic1", false);
             Thread.sleep(1000);
         }
@@ -653,7 +652,7 @@ public class ReplicateTest {
         // Why? We can set the offset to the offset on partition 2 (record: r2_3) because
         // the offset on partition 1 had lag = 0/was at the end of partition 1.
         // Create test topic
-        if (TopicExt.exists("local", "testtopic")) {
+        if (Topic.exists("local", "testtopic")) {
             Topic.delete("local", "testtopic", false);
             Thread.sleep(1000);
         }
@@ -746,7 +745,7 @@ public class ReplicateTest {
         // Why? We have to set the offset to the offset on partition 1 (record: r1_3) because
         // the offset on partition 1 does not have lag = 0/is not at the end of partition 1 (reprocessing involved).
         // Create test topic
-        if (TopicExt.exists("local", "testtopic")) {
+        if (Topic.exists("local", "testtopic")) {
             Topic.delete("local", "testtopic", false);
             Thread.sleep(1000);
         }
@@ -839,7 +838,7 @@ public class ReplicateTest {
         // Why? We have to set the offset to the offset on partition 1 (record: r1_1) because
         // the offset on partition 1 does not have lag = 0/is not at the end of partition 1 (reprocessing involved).
         // Create test topic
-        if (TopicExt.exists("local", "testtopic")) {
+        if (Topic.exists("local", "testtopic")) {
             Topic.delete("local", "testtopic", false);
             Thread.sleep(1000);
         }

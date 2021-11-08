@@ -197,4 +197,23 @@ public class Group {
             }
         }
     }
+
+    public static List<String> list(String clusterString) {
+        var listConsumerGroupsResult = AdminClientEnum.INSTANCE.get(clusterString)
+                .listConsumerGroups();
+        Collection<ConsumerGroupListing> consumerGroupListingCollection;
+        try {
+            consumerGroupListingCollection = listConsumerGroupsResult.all().get();
+        } catch (InterruptedException e) {
+            throw new InterruptedRuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new ExecutionRuntimeException(e);
+        }
+        //
+        return consumerGroupListingCollection
+                .stream()
+                .map(ConsumerGroupListing::groupId)
+                .sorted()
+                .collect(Collectors.toList());
+    }
 }

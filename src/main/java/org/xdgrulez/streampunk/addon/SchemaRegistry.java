@@ -1,18 +1,17 @@
 package org.xdgrulez.streampunk.addon;
 
-import org.xdgrulez.streampunk.exception.IORuntimeException;
-import org.xdgrulez.streampunk.helper.Helpers;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
+import org.xdgrulez.streampunk.exception.IORuntimeException;
+import org.xdgrulez.streampunk.helper.Helpers;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -27,7 +26,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
-public class Schemas {
+public class SchemaRegistry {
     public static int createSchema(String clusterString, String subjectString, String schemaString) {
         int returnInt = -1;
         //
@@ -219,13 +218,13 @@ public class Schemas {
 
     public static GenericRecord jsonStringToGenericRecord(String jsonString, String schemaString) {
         // Parse the schema string into a Schema object
-        Schema.Parser parser = new Schema.Parser();
-        Schema schema = parser.parse(schemaString);
+        org.apache.avro.Schema.Parser parser = new org.apache.avro.Schema.Parser();
+        org.apache.avro.Schema schema = parser.parse(schemaString);
         //
         return jsonStringToGenericRecord(jsonString, schema);
     }
 
-    public static GenericRecord jsonStringToGenericRecord(String jsonString, Schema schema) {
+    public static GenericRecord jsonStringToGenericRecord(String jsonString, org.apache.avro.Schema schema) {
         GenericRecord returnGenericRecord = null;
         //
         try {
@@ -281,7 +280,7 @@ public class Schemas {
         return dataBytes;
     }
 
-    public static GenericRecord avroBytesToGenericRecord(byte[] avroBytes, Schema schema) {
+    public static GenericRecord avroBytesToGenericRecord(byte[] avroBytes, org.apache.avro.Schema schema) {
         var datumReader = new GenericDatumReader<GenericRecord>(schema);
         var byteArrayInputStream = new ByteArrayInputStream(avroBytes);
         byteArrayInputStream.reset();
@@ -296,7 +295,7 @@ public class Schemas {
         return genericRecord;
     }
 
-    public static String genericRecordToString(GenericRecord genericRecord, Schema schema) {
+    public static String genericRecordToString(GenericRecord genericRecord, org.apache.avro.Schema schema) {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         var genericDatumWriter = new GenericDatumWriter<>(schema);
         BinaryEncoder encoder =
@@ -310,17 +309,17 @@ public class Schemas {
         return byteArrayOutputStream.toString();
     }
 
-    public static JsonObject genericRecordToJsonObject(GenericRecord genericRecord, Schema schema) {
+    public static JsonObject genericRecordToJsonObject(GenericRecord genericRecord, org.apache.avro.Schema schema) {
         var jsonString = genericRecordToString(genericRecord, schema);
         return JsonParser.parseString(jsonString).getAsJsonObject();
     }
 
-    public static JsonObject avroBytesToJsonObject(byte[] avroBytes, Schema schema) {
+    public static JsonObject avroBytesToJsonObject(byte[] avroBytes, org.apache.avro.Schema schema) {
         var genericRecord = avroBytesToGenericRecord(avroBytes, schema);
         return genericRecordToJsonObject(genericRecord, schema);
     }
 
-    public static byte[] genericRecordToAvroBytes(GenericRecord genericRecord, Schema schema) {
+    public static byte[] genericRecordToAvroBytes(GenericRecord genericRecord, org.apache.avro.Schema schema) {
         var genericDatumWriter = new GenericDatumWriter<>(schema);
         var byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.reset();

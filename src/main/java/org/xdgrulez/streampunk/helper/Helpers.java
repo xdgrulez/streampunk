@@ -1,9 +1,5 @@
 package org.xdgrulez.streampunk.helper;
 
-import org.xdgrulez.streampunk.exception.IORuntimeException;
-import org.xdgrulez.streampunk.exception.InvalidProtocolBufferRuntimeException;
-import com.google.protobuf.DescriptorProtos;
-import com.google.protobuf.Descriptors;
 import com.google.protobuf.DynamicMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.confluent.kafka.schemaregistry.protobuf.ProtobufSchema;
@@ -12,17 +8,51 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.DecoderFactory;
+import org.xdgrulez.streampunk.exception.IORuntimeException;
+import org.xdgrulez.streampunk.exception.InvalidProtocolBufferRuntimeException;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class Helpers {
+    public static Map<Integer, Long> getZeroOffsets(int partitionsInt) {
+        var zeroOffsets = new HashMap<Integer, Long>();
+        for (var i = 0; i < partitionsInt; i++) {
+            zeroOffsets.put(i, 0L);
+        }
+        return zeroOffsets;
+    }
+
+    public static Map<Integer, Long> getOffsets(int partitionsInt, long offsetLong) {
+        var offsets = new HashMap<Integer, Long>();
+        for (var i = 0; i < partitionsInt; i++) {
+            offsets.put(i, offsetLong);
+        }
+        return offsets;
+    }
+
+    public static String getProtobufField(DynamicMessage dynamicMessage, String... fieldStrings) {
+        List<String> fieldStringListAllButLast = new ArrayList<String>();
+        String fieldStringListLast = null;
+        var fieldStringLengthInt = fieldStrings.length;
+        if (fieldStringLengthInt > 0) {
+            var fieldStringList = Arrays.asList(fieldStrings);
+            fieldStringListAllButLast = fieldStringList.subList(0, fieldStringLengthInt - 1);
+            fieldStringListLast = fieldStringList.get(fieldStringLengthInt - 1);
+        }
+        //
+        var descriptor = dynamicMessage.getDescriptorForType();
+        for (String fieldString: fieldStringListAllButLast) {
+            dynamicMessage = (DynamicMessage) dynamicMessage.getField(descriptor.findFieldByName(fieldString));
+            descriptor = dynamicMessage.getDescriptorForType();
+        }
+        //
+        return (String) dynamicMessage.getField(descriptor.findFieldByName(fieldStringListLast));
+    }
+
     // graalpython gives us Integers where we expect Longs... workaround...
     public static long getLong(Object object) {
         if (object.getClass().getName().equals("java.lang.Integer")) {

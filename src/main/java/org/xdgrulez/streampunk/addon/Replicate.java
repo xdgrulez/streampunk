@@ -100,7 +100,7 @@ public class Replicate {
                                       List<String> topicStringList,
                                       Pred<String> topicPred) {
         // Get all topics matching TopicRegexString
-        var filteredTopicStringList = Cluster.listTopics(clusterString)
+        var filteredTopicStringList = Topic.list(clusterString)
                 .stream()
                 .filter(topicString -> {
                     if (topicRegexString != null) {
@@ -120,8 +120,8 @@ public class Replicate {
         final var totalTotalLagLong = new AtomicLong(0);
         filteredTopicStringList
                 .forEach(topicString -> {
-                    var totalTopicSizeLong = TopicExt.getTotalSize(clusterString, topicString);
-                    var totalLagLong = TopicExt.groupGetTotalLag(clusterString, topicString, groupString);
+                    var totalTopicSizeLong = Topic.getTotalSize(clusterString, topicString);
+                    var totalLagLong = Topic.groupGetTotalLag(clusterString, topicString, groupString);
                     System.out.printf("Topic: %s, Total topic size: %d, Total lag: %d\n",
                             topicString, totalTopicSizeLong, totalLagLong);
                     totalTopicSizeAllTopicsLong.set(totalTopicSizeAllTopicsLong.get() + totalTopicSizeLong);
@@ -192,7 +192,7 @@ public class Replicate {
                     System.out.printf("replicateTopics() %s/%s, %s/%s\n",
                             sourceClusterString, targetClusterString, sourceTopicString, targetTopicString);
 
-                    if (TopicExt.exists(targetClusterString, targetTopicString)) {
+                    if (Topic.exists(targetClusterString, targetTopicString)) {
                         // If the target topic already exists...
                         if (deleteExistingTopicBoolean) {
                             // ...delete it if deleteExistingTopicBoolean == true
@@ -203,7 +203,7 @@ public class Replicate {
                                 } catch (InterruptedException e) {
                                     throw new InterruptedRuntimeException(e);
                                 }
-                            } while (TopicExt.exists(targetClusterString, targetTopicString));
+                            } while (Topic.exists(targetClusterString, targetTopicString));
                             // Create the corresponding target topic
                             Topic.create(targetClusterString, targetTopicString,
                                     targetPartitionsInt, targetReplicationFactorInt, targetStringStringMap);
@@ -358,7 +358,7 @@ public class Replicate {
         // Create consumer group name
         var sourceGroupString = String.format("sp-replicate-topic-content-%s-%s", sourceClusterString, targetClusterString);
         // Delete consumer group if fromBeginningBoolean == true and the consumer group already exists
-        if (fromBeginningBoolean && Cluster.listGroups(sourceClusterString).contains(sourceGroupString)) {
+        if (fromBeginningBoolean && Group.list(sourceClusterString).contains(sourceGroupString)) {
             Group.delete(sourceClusterString, sourceGroupString, false);
         }
         //
@@ -423,7 +423,7 @@ public class Replicate {
                 System.out.printf("replicateTopicContents() %s/%s, %s/%s\n",
                         sourceClusterString, sourceTopicString, targetClusterString, targetTopicString);
                 //
-                long totalSizeLong = TopicExt.getTotalSize(sourceClusterString, sourceTopicString);
+                long totalSizeLong = Topic.getTotalSize(sourceClusterString, sourceTopicString);
                 if (totalSizeLong == 0) {
                     continue;
                 }
@@ -520,7 +520,7 @@ public class Replicate {
                             sourceClusterString, targetClusterString, sourceTopicString, targetTopicString);
 
                     // Cannot replicate consumer group if target topic is empty
-                    long targetTopicTotalSize = TopicExt.getTotalSize(targetClusterString, targetTopicString);
+                    long targetTopicTotalSize = Topic.getTotalSize(targetClusterString, targetTopicString);
                     if (targetTopicTotalSize == 0) {
                         return;
                     }
@@ -531,7 +531,7 @@ public class Replicate {
                     var targetLatestOffsets =
                             Topic.getOffsets(targetClusterString, targetTopicString).getLatest();
                     // For all groups associated with the source topic...
-                    TopicExt.listGroups(sourceClusterString, sourceTopicString)
+                    Topic.listGroups(sourceClusterString, sourceTopicString)
                             .stream()
                             .filter(sourceGroupString -> {
                                 if (excludeGroupStringList != null &&
