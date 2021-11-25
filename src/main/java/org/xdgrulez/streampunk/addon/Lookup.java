@@ -26,7 +26,7 @@ public class Lookup {
         var partitionsInt = Topic.getPartitions(clusterString, topicString);
         var startOffsets = Helpers.getZeroOffsets(partitionsInt);
         var endOffsets = Topic.getOffsets(clusterString, topicString).getLatest();
-        return findAllStringProtobuf(clusterString, topicString, findAllPred);
+        return findAllStringProtobuf(clusterString, topicString, findAllPred, startOffsets, endOffsets);
     }
 
     public static List<ConsumerRecord<String, DynamicMessage>> findAllStringProtobuf(

@@ -39,6 +39,13 @@ public class ConsumerString extends Consumer {
     ////////////////////////////////////////////////////////////////////////////////
 
     public static void consume(String clusterString,
+                               String topicString,
+                               Map<Integer, Long> startOffsets,
+                               Map<Integer, Long> endOffsets) {
+        consume(clusterString, topicString, "test", startOffsets, endOffsets, null, null, 500, true, 3);
+    }
+
+    public static void consume(String clusterString,
                                      String topicString,
                                      String groupString,
                                      Map<Integer, Long> startOffsets,

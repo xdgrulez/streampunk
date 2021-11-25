@@ -113,11 +113,11 @@ public class Consumer {
 //                        consumerRecord.offset(),
 //                        consumerRecord.timestamp());
                 if (interactiveBoolean) {
-                    System.out.printf("\nTopic: %s, Partition: %d, Offset: %d, Timestamp: %d%n",
+                    System.out.printf("\nTopic: %s, Partition: %d, Offset: %d, Timestamp: %s%n",
                             topicString,
                             consumerRecord.partition(),
                             consumerRecord.offset(),
-                            consumerRecord.timestamp());
+                            Helpers.epochToTs(consumerRecord.timestamp()));
                     var headers = consumerRecord.headers();
                     System.out.println("Headers:");
                     for (var header : headers)
@@ -153,12 +153,12 @@ public class Consumer {
                     break;
                 }
                 //
-//                if (interactiveBoolean && i % interactiveBatchSizeLong == 0) {
-//                    if (Helpers.yesNoPrompt("Continue (Y/n)?")) {
-//                        breakBoolean = true;
-//                        break;
-//                    }
-//                }
+                if (interactiveBoolean && i % interactiveBatchSizeLong == 0) {
+                    if (!Helpers.yesNoPrompt("\nContinue (Y/n)?", true)) {
+                        breakBoolean = true;
+                        break;
+                    }
+                }
                 i++;
             }
             //

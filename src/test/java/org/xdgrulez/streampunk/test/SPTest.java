@@ -39,6 +39,23 @@ public class SPTest {
     }
 
 //    @Test
+    public void backupListTopics() {
+        var clusterString = "eu-prod";
+        var topicStringList = Topic.list(clusterString);
+        topicStringList
+                .stream()
+                .filter(topicString ->
+                        !topicString.endsWith("-repartition") &&
+                                !topicString.endsWith("-changelog") &&
+                                !topicString.contains("-KSTREAM-") &&
+                                !topicString.contains("-KTABLE-") &&
+                                !topicString.contains("_confluent") &&
+                                !topicString.contains("_schemas") &&
+                                topicString.startsWith("prod."))
+                .forEach(topicString -> System.out.printf("%s,", topicString));
+    }
+
+    //    @Test
     public void testEuProdListTopics() {
         var clusterString = "eu-prod";
         //

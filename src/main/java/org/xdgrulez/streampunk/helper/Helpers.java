@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Helpers {
@@ -45,7 +46,7 @@ public class Helpers {
         }
         //
         var descriptor = dynamicMessage.getDescriptorForType();
-        for (String fieldString: fieldStringListAllButLast) {
+        for (String fieldString : fieldStringListAllButLast) {
             dynamicMessage = (DynamicMessage) dynamicMessage.getField(descriptor.findFieldByName(fieldString));
             descriptor = dynamicMessage.getDescriptorForType();
         }
@@ -61,14 +62,26 @@ public class Helpers {
             return (long) object;
         }
     }
+
     public static boolean yesNoPrompt(String promptString) {
-        System.out.println(promptString);
+        return yesNoPrompt(promptString, true);
+    }
+
+    public static boolean yesNoPrompt(String promptString, boolean defaultBoolean) {
+//        System.out.println(promptString);
         var console = System.console();
         if (console != null) {
             // Read a line from the user input. The cursor blinks after the specified input.
-            var name = console.readLine("Name: ");
-            System.out.println("Name entered: " + name);
-        }//        try {
+            var lineString = console.readLine(promptString + " ");
+            if (lineString.equalsIgnoreCase("y")) {
+                return true;
+            } else if (lineString.equalsIgnoreCase("n")) {
+                return false;
+            }
+        }
+        return defaultBoolean;
+        //
+//        try {
 //            int readInt = System.in.read();
 //            if (readInt == 'n') {
 //                return false;
@@ -76,7 +89,7 @@ public class Helpers {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-        return true;
+//        return true;
     }
 
     public static Properties loadProperties(String... propertiesFileStrings) {
@@ -147,5 +160,14 @@ public class Helpers {
             throw new InvalidProtocolBufferRuntimeException(e);
         }
         return dynamicMessage;
+    }
+
+    public static String epochToTs(long epochLong) {
+        var formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        formatter.setTimeZone(TimeZone.getTimeZone("CET"));
+        //
+        var tsString = formatter.format(epochLong);
+        //
+        return tsString;
     }
 }
