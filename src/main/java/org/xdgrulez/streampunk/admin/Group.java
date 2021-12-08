@@ -216,4 +216,9 @@ public class Group {
                 .sorted()
                 .collect(Collectors.toList());
     }
+
+    public static boolean exists(String clusterString, String groupString) {
+        var groupList = list(clusterString);
+        return groupList.contains(groupString);
+    }
 }

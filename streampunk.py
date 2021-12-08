@@ -28,6 +28,9 @@ import org.xdgrulez.streampunk.producer.ProducerString as ProducerString
 import org.xdgrulez.streampunk.producer.ProducerStringAvro as ProducerStringAvro
 import org.xdgrulez.streampunk.producer.ProducerStringProtobuf as ProducerStringProtobuf
 
+# Helpers
+import org.xdgrulez.streampunk.helper.Helpers as Helpers
+
 def jp(object):
     def is_sp_rec_object(object):
         return hasattr(object, "getClass") and hasattr(object.getClass(), "getName") and object.getClass().getName().startswith("org.xdgrulez.streampunk.record.")

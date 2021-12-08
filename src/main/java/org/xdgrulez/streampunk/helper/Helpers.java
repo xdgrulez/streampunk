@@ -36,22 +36,27 @@ public class Helpers {
     }
 
     public static String getProtobufField(DynamicMessage dynamicMessage, String... fieldStrings) {
-        List<String> fieldStringListAllButLast = new ArrayList<String>();
-        String fieldStringListLast = null;
+        List<String> allButLastFieldStringList = new ArrayList<>();
+        String lastFieldString = null;
         var fieldStringLengthInt = fieldStrings.length;
         if (fieldStringLengthInt > 0) {
             var fieldStringList = Arrays.asList(fieldStrings);
-            fieldStringListAllButLast = fieldStringList.subList(0, fieldStringLengthInt - 1);
-            fieldStringListLast = fieldStringList.get(fieldStringLengthInt - 1);
+            allButLastFieldStringList = fieldStringList.subList(0, fieldStringLengthInt - 1);
+            lastFieldString = fieldStringList.get(fieldStringLengthInt - 1);
         }
         //
         var descriptor = dynamicMessage.getDescriptorForType();
-        for (String fieldString : fieldStringListAllButLast) {
-            dynamicMessage = (DynamicMessage) dynamicMessage.getField(descriptor.findFieldByName(fieldString));
+        for (String fieldString : allButLastFieldStringList) {
+            var fieldDescriptor = descriptor.findFieldByName(fieldString);
+            if (fieldDescriptor == null) {
+                return null;
+            }
+            dynamicMessage = (DynamicMessage) dynamicMessage.getField(fieldDescriptor);
             descriptor = dynamicMessage.getDescriptorForType();
         }
         //
-        return (String) dynamicMessage.getField(descriptor.findFieldByName(fieldStringListLast));
+        var lastFieldDescriptor = descriptor.findFieldByName(lastFieldString);
+        return lastFieldDescriptor == null ? null : (String) dynamicMessage.getField(lastFieldDescriptor);
     }
 
     // graalpython gives us Integers where we expect Longs... workaround...

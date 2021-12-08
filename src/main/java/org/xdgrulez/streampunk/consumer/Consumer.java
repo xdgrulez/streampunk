@@ -13,6 +13,7 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
@@ -82,8 +83,12 @@ public class Consumer {
                                             boolean interactiveBoolean,
                                             long interactiveBatchSizeLong) {
         var breakBoolean = false;
-        var fileInputStream = new InputStreamReader(System.in);
-        var bufferedReader = new BufferedReader(fileInputStream);
+        InputStreamReader fileInputStream;
+        BufferedReader bufferedReader = null;
+        if (interactiveBoolean) {
+            fileInputStream = new InputStreamReader(System.in);
+            bufferedReader = new BufferedReader(fileInputStream);
+        }
         var currentOffsets = new HashMap<Integer, Long>();
         if (endOffsets != null) {
             for (Integer partitionInt: endOffsets.keySet()) {

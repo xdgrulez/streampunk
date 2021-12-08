@@ -5,6 +5,7 @@ import org.xdgrulez.streampunk.consumer.Consumer;
 import org.xdgrulez.streampunk.consumer.ConsumerString;
 import org.xdgrulez.streampunk.consumer.ConsumerStringAvro;
 import org.xdgrulez.streampunk.exception.IORuntimeException;
+import org.xdgrulez.streampunk.helper.Helpers;
 import org.xdgrulez.streampunk.helper.fun.Proc;
 import org.xdgrulez.streampunk.record.OffsetTimestampRec;
 import org.apache.avro.generic.GenericRecord;
@@ -17,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,9 +46,10 @@ public class Download {
                             consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
                     //
                     try {
-                        var string = String.format("%d:%d,%s:%s\n",
+                        var string = String.format("%d:%d,%s,%s:%s\n",
                                 consumerRecord.partition(),
                                 consumerRecord.offset(),
+                                Helpers.epochToTs(consumerRecord.timestamp()),
                                 consumerRecord.key(),
                                 consumerRecord.value());
                         //
@@ -142,9 +145,10 @@ public class Download {
                     }
                     //
                     try {
-                        var string = String.format("%d:%d,%s:%s\n",
+                        var string = String.format("%d:%d,%s,%s:%s\n",
                                 consumerRecord.partition(),
                                 consumerRecord.offset(),
+                                Helpers.epochToTs(consumerRecord.timestamp()),
                                 consumerRecord.key(),
                                 consumerRecord.value());
                         //

@@ -7,6 +7,7 @@ import org.xdgrulez.streampunk.admin.Cluster;
 import org.xdgrulez.streampunk.admin.Group;
 import org.xdgrulez.streampunk.admin.Topic;
 import org.xdgrulez.streampunk.consumer.ConsumerByteArray;
+import org.xdgrulez.streampunk.consumer.ConsumerString;
 import org.xdgrulez.streampunk.consumer.ConsumerStringAvro;
 import org.xdgrulez.streampunk.consumer.ConsumerStringProtobuf;
 import org.xdgrulez.streampunk.helper.Helpers;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,7 @@ public class SPTest {
     public void tearDown() {
     }
 
-//    @Test
+    //    @Test
     public void backupListTopics() {
         var clusterString = "eu-prod";
         var topicStringList = Topic.list(clusterString);
