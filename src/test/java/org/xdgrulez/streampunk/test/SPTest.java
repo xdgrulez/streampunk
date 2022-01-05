@@ -40,6 +40,49 @@ public class SPTest {
     public void tearDown() {
     }
 
+//    @Test
+    public void testTimestamps() {
+        var epochLong = Helpers.tsToEpoch2("2021-12-02 21:02:29.009126 +08:00");
+        System.out.println(epochLong);
+    }
+
+    @Test
+    public void testReplicate() {
+        var cluster_str = "eu-dev";
+        var source_topic_str = "dev.devices.manufacturing.pt.mtp.mt0001l.de.bosch.com.mesmtp.qual.components";
+
+//        var start_timestamp_int = Helpers.tsToEpoch("2021-12-01 14:02:16.424", "CET");
+//        var end_timestamp_int = Helpers.tsToEpoch("2021-12-03 14:02:16.424", "CET");
+        var start_timestamp_int = Helpers.tsToEpoch("2021-12-02 14:02:16.424", "CET");
+        var end_timestamp_int = Helpers.tsToEpoch("2021-12-02 14:12:16.424", "CET");
+
+        var start_offsets = Topic.getOffsets(cluster_str, source_topic_str, start_timestamp_int);
+        var end_offsets = Topic.getOffsets(cluster_str, source_topic_str, end_timestamp_int);
+
+        var target_topic_str = source_topic_str + ".three.days";
+
+        Replicate.replicateTopic(cluster_str, cluster_str, source_topic_str, target_topic_str, Map.of("retention.bytes", "-1", "retention.ms", "-1"), null, null, true);
+
+        Replicate.replicateTopicContents(cluster_str, cluster_str, Map.of(source_topic_str, target_topic_str), null, Map.of(source_topic_str, start_offsets), Map.of(source_topic_str, end_offsets), null, false, false, false);
+//        Replicate.replicateTopicContents(cluster_str, cluster_str, Map.of(source_topic_str, target_topic_str), null, Map.of(source_topic_str, Map.of(0, 281972L)), Map.of(source_topic_str, Map.of(0, 281974L)), null, false, false, false);
+
+        System.out.println(Topic.getTotalSize(cluster_str, target_topic_str));
+    }
+
+//    @Test
+    public void testReplicate2() {
+        var cluster_str = "eu-dev";
+        var source_topic_str = "dev.devices.manufacturing.pt.mtp.mt0001l.de.bosch.com.mesmtp.qual.components";
+
+        var target_topic_str = source_topic_str + ".three.days";
+
+        Replicate.replicateTopic(cluster_str, cluster_str, source_topic_str, target_topic_str, Map.of("retention.bytes", "-1", "retention.ms", "-1"), null, null, true);
+
+        Replicate.replicateTopicContents(cluster_str, cluster_str, Map.of(source_topic_str, target_topic_str), null, Map.of(source_topic_str, Map.of(0, 281972L)), Map.of(source_topic_str, Map.of(0, 281974L)), null, false, false, false);
+
+        System.out.println(Topic.getTotalSize(cluster_str, target_topic_str));
+    }
+
     //    @Test
     public void backupListTopics() {
         var clusterString = "eu-prod";

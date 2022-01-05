@@ -15,6 +15,7 @@ import org.xdgrulez.streampunk.producer.ProducerByteArray;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -225,6 +226,15 @@ public class Replicate {
                                       Integer targetPartitionsInt,
                                       Integer targetReplicationFactorInt,
                                       boolean deleteExistingTopicBoolean) {
+        System.out.printf("sourceClusterString: %s\n", sourceClusterString);
+        System.out.printf("targetClusterString: %s\n", targetClusterString);
+        System.out.printf("sourceTopicString: %s\n", sourceTopicString);
+        System.out.printf("targetTopicString: %s\n", targetTopicString);
+        System.out.printf("targetStringStringMapMap: %s\n", targetStringStringMapMap.toString());
+        System.out.printf("targetPartitionsInt: %s\n", targetPartitionsInt);
+        System.out.printf("targetReplicationFactorInt: %s\n", targetReplicationFactorInt);
+        System.out.printf("deleteExistingTopicBoolean: %s\n", deleteExistingTopicBoolean);
+        //
         var sourceTopicStringTargetTopicStringMap = new HashMap<String, String>();
         sourceTopicStringTargetTopicStringMap.put(sourceTopicString, targetTopicString);
         //
@@ -258,6 +268,16 @@ public class Replicate {
                                               boolean fromBeginningBoolean,
                                               boolean untilLatestBoolean) {
         System.out.println("replicateTopicContents()");
+        //
+        System.out.printf("sourceClusterString: %s\n", sourceClusterString);
+        System.out.printf("targetClusterString: %s\n", targetClusterString);
+        System.out.printf("sourceTopicStringTargetTopicStringMap: %s\n", sourceTopicStringTargetTopicStringMap.toString());
+        System.out.printf("sourceTopicStringPartitionIntTargetPartitionIntMapMap: %s\n", sourceTopicStringPartitionIntTargetPartitionIntMapMap);
+        System.out.printf("sourceTopicStartOffsetsMap: %s\n", sourceTopicStartOffsetsMap.toString());
+        System.out.printf("sourceTopicEndOffsetsMap: %s\n", sourceTopicEndOffsetsMap.toString());
+        System.out.printf("parallelBoolean: %s\n", parallelBoolean);
+        System.out.printf("fromBeginningBoolean: %s\n", fromBeginningBoolean);
+        System.out.printf("untilLatestBoolean: %s\n", untilLatestBoolean);
         //
         // Get list of source topics
         var sourceTopicStringList =
@@ -356,7 +376,10 @@ public class Replicate {
                         .map(sourceTopicString -> (Pred<ConsumerRecord<byte[], byte[]>>) null)
                         .collect(Collectors.toList());
         // Create consumer group name
-        var sourceGroupString = String.format("sp-replicate-topic-content-%s-%s", sourceClusterString, targetClusterString);
+//        var sourceGroupString = String.format("sp-replicate-topic-content-%s-%s", sourceClusterString, targetClusterString);
+        var pidLong = ProcessHandle.current().pid();
+        var nowLong = new Date().getTime();
+        var sourceGroupString = sourceTopicStringList.get(0) + ".sp.consumerstring.consume." + pidLong + "." + nowLong;
         // Delete consumer group if fromBeginningBoolean == true and the consumer group already exists
         if (fromBeginningBoolean && Group.list(sourceClusterString).contains(sourceGroupString)) {
             Group.delete(sourceClusterString, sourceGroupString, false);

@@ -32,6 +32,7 @@ public class Consumer {
         var properties = Helpers.loadProperties(String.format("./clusters/%s.properties", clusterString));
         properties.put("auto.offset.reset", "earliest");
         //
+        System.out.printf("Group: %s\n", groupString);
         properties.put("group.id", groupString);
         //
         properties.put("enable.auto.commit", "false");
@@ -101,11 +102,13 @@ public class Consumer {
             var consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1));
             if (consumerRecords.isEmpty()) {
                 retriesInt++;
-//                System.out.printf("poll(): Retrying... %d (%d)\n", retriesInt, maxRetriesInt);
                 if (retriesInt == maxRetriesInt) {
                     breakBoolean = true;
                     System.out.printf("poll(): Stopping after %d retries.\n", maxRetriesInt);
                     continue;
+                }
+                if (retriesInt % 20 == 0) {
+                    System.out.printf("poll(): Retrying... %d/%d\n", retriesInt, maxRetriesInt);
                 }
             } else {
                 retriesInt = 0;
@@ -117,6 +120,12 @@ public class Consumer {
 //                        consumerRecord.partition(),
 //                        consumerRecord.offset(),
 //                        consumerRecord.timestamp());
+                if (!interactiveBoolean && consumerRecord.offset() % 10000 == 0) {
+                    var partitionInt = consumerRecord.partition();
+                    var offsetLong = consumerRecord.offset();
+                    System.out.printf("Topic: %s, partition: %d, offset: %d\n",
+                            consumerRecord.topic(), partitionInt, consumerRecord.offset());
+                }
                 if (interactiveBoolean) {
                     System.out.printf("\nTopic: %s, Partition: %d, Offset: %d, Timestamp: %s%n",
                             topicString,

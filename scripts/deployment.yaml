@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streampunk
+spec:
+  selector:
+    matchLabels:
+      app: streampunk
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: streampunk
+    spec:
+      containers:
+      - image: nemoregistrysandbox.azurecr.io/streampunk:0.0.1
+        imagePullPolicy: Always
+        name: streampunk
+      imagePullSecrets:
+      - name: acr-pullsecrets

@@ -45,17 +45,15 @@ public class ConsumerString extends Consumer {
                                Proc<ConsumerRecord<String, String>> doConsumerRecordProc,
                                boolean interactiveBoolean) {
         var pidLong = ProcessHandle.current().pid();
-        var groupString = topicString + ".sp.consumerstring.consume." + pidLong;
-//        System.out.println(groupString);
+        var groupString = topicString + ".sp.consume." + pidLong;
         consume(clusterString, topicString, groupString, startOffsets, endOffsets, doConsumerRecordProc, null, 500, interactiveBoolean, 3);
     }
 
     public static void consume(String clusterString,
                                String topicString,
                                Map<Integer, Long> startOffsets,
-                               Map<Integer, Long> endOffsets,
                                Proc<ConsumerRecord<String, String>> doConsumerRecordProc) {
-        consume(clusterString, topicString, startOffsets, endOffsets, doConsumerRecordProc, true);
+        consume(clusterString, topicString, startOffsets, null, doConsumerRecordProc, true);
     }
 
     public static void consume(String clusterString,

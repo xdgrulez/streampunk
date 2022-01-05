@@ -15,7 +15,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Helpers {
@@ -167,12 +170,43 @@ public class Helpers {
         return dynamicMessage;
     }
 
-    public static String epochToTs(long epochLong) {
+    public static String epochToTs(long epochLong, String timeZoneString) {
         var formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        formatter.setTimeZone(TimeZone.getTimeZone("CET"));
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZoneString));
         //
         var tsString = formatter.format(epochLong);
         //
         return tsString;
+    }
+
+    public static String epochToTs(long epochLong) {
+        return epochToTs(epochLong, "CET");
+    }
+
+    public static long tsToEpoch(String tsString, String timeZoneString) {
+        var formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        formatter.setTimeZone(TimeZone.getTimeZone(timeZoneString));
+        //
+        Long tsLong = null;
+        try {
+            var tsDate = formatter.parse(tsString);
+            tsLong = tsDate.toInstant().toEpochMilli();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //
+        return tsLong;
+    }
+
+    public static long tsToEpoch(String tsString) {
+        return tsToEpoch(tsString, "CET");
+    }
+
+    public static long tsToEpoch2(String timestampString) {
+        var temporalAccessor = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS xxx")
+                .parse(timestampString);
+        var instant = Instant.from(temporalAccessor);
+        return instant.toEpochMilli();
     }
 }

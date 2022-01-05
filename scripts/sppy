@@ -1,0 +1,3 @@
+#!/bin/bash
+graalpython --jvm  --experimental-options --python.EmulateJython --vm.cp=./streampunk.jar $*
+
