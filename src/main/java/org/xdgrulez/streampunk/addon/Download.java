@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Download {
-    public static void downloadStringAvroToFile(String clusterString,
+    public static void downloadStringAvroToile(String clusterString,
                                                 String topicString,
                                                 String fileString) {
         var partitionsInt = Topic.getPartitions(clusterString, topicString);

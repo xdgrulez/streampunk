@@ -32,7 +32,7 @@ public class Consumer {
         var properties = Helpers.loadProperties(String.format("./clusters/%s.properties", clusterString));
         properties.put("auto.offset.reset", "earliest");
         //
-        System.out.printf("Group: %s\n", groupString);
+//        System.out.printf("Group: %s\n", groupString);
         properties.put("group.id", groupString);
         //
         properties.put("enable.auto.commit", "false");
@@ -123,8 +123,13 @@ public class Consumer {
                 if (!interactiveBoolean && consumerRecord.offset() % 10000 == 0) {
                     var partitionInt = consumerRecord.partition();
                     var offsetLong = consumerRecord.offset();
-                    System.out.printf("Topic: %s, partition: %d, offset: %d\n",
-                            consumerRecord.topic(), partitionInt, consumerRecord.offset());
+                    if (endOffsets != null && endOffsets.get(partitionInt) != null) {
+                        System.out.printf("Topic: %s, partition: %d, offset: %d/%d\n",
+                                consumerRecord.topic(), partitionInt, consumerRecord.offset(), endOffsets.get(partitionInt));
+                    } else {
+                        System.out.printf("Topic: %s, partition: %d, offset: %d/?\n",
+                                consumerRecord.topic(), partitionInt, consumerRecord.offset());
+                    }
                 }
                 if (interactiveBoolean) {
                     System.out.printf("\nTopic: %s, Partition: %d, Offset: %d, Timestamp: %s%n",

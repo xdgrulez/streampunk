@@ -157,7 +157,10 @@ public class Lookup {
         var untilConsumerRecordPred =
                 (Pred<ConsumerRecord<String, String>>) lookupFun::apply;
         //
-        ConsumerString.consume(clusterString, topicString, "test", startOffsets, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, 500, false, 1);
+        var pidLong = ProcessHandle.current().pid();
+        var groupString = topicString + ".sp.lookup." + pidLong;
+        //
+        ConsumerString.consume(clusterString, topicString, groupString, startOffsets, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, 500, false, 1);
         //
         return atomicReference.get();
     }

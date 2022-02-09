@@ -1,5 +1,6 @@
 package org.xdgrulez.streampunk.consumer;
 
+import com.google.protobuf.DynamicMessage;
 import org.xdgrulez.streampunk.helper.fun.Pred;
 import org.xdgrulez.streampunk.helper.fun.Proc;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
@@ -39,6 +40,25 @@ public class ConsumerStringAvro extends Consumer {
     ////////////////////////////////////////////////////////////////////////////////
     // Consume
     ////////////////////////////////////////////////////////////////////////////////
+
+    public static void consume(String clusterString,
+                               String topicString,
+                               Map<Integer, Long> startOffsets,
+                               Map<Integer, Long> endOffsets,
+                               Proc<ConsumerRecord<String, GenericRecord>> doConsumerRecordProc,
+                               boolean interactiveBoolean) {
+        var pidLong = ProcessHandle.current().pid();
+        var groupString = topicString + ".sp.consumerstringavro.consume." + pidLong;
+//        System.out.println(groupString);
+        consume(clusterString, topicString, groupString, startOffsets, endOffsets, doConsumerRecordProc, null, 500, interactiveBoolean, 3);
+    }
+
+    public static void consume(String clusterString,
+                               String topicString,
+                               Map<Integer, Long> startOffsets,
+                               Proc<ConsumerRecord<String, GenericRecord>> doConsumerRecordProc) {
+        consume(clusterString, topicString, startOffsets, null, doConsumerRecordProc, true);
+    }
 
     public static void consume(String clusterString,
                                String topicString,
