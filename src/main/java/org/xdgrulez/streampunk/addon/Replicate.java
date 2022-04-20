@@ -14,6 +14,7 @@ import org.xdgrulez.streampunk.producer.ProducerByteArray;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,32 +66,37 @@ public class Replicate {
         }
     }
 
-    public static void copy(String sourceClusterString,
+    public static void copyBytes(String sourceClusterString,
                             String targetClusterString,
                             String sourceTopicString,
                             String targetTopicString,
-                            Fun<byte[], byte[]> bytesBytesSmtFun,
-                            boolean deleteExistingTopicBoolean,
-                            boolean fromBeginningBoolean) {
+                            Fun<byte[], byte[]> bytesBytesSmtFun) {
         Fun<ConsumerRecord<byte[], byte[]>, ProducerRecord<byte[], byte[]>> smtFun =
-                consumerRecord -> new ProducerRecord<>(
-                        targetTopicString, consumerRecord.partition(), consumerRecord.timestamp(),
-                        consumerRecord.key(), consumerRecord.value(), consumerRecord.headers());
+                consumerRecord -> {
+                    var outputbytes = bytesBytesSmtFun.apply(consumerRecord.value());
+                    return new ProducerRecord<>(
+                            targetTopicString, consumerRecord.partition(), consumerRecord.timestamp(),
+                            consumerRecord.key(), outputbytes, consumerRecord.headers());
+                };
         Replicate.copy(sourceClusterString, targetClusterString, sourceTopicString, targetTopicString,
-                smtFun, deleteExistingTopicBoolean, fromBeginningBoolean, false);
+                smtFun, true, true, true);
     }
 
-    public static void copy(String sourceClusterString,
-                            String targetClusterString,
-                            String sourceTopicString,
-                            String targetTopicString) {
-        copy(sourceClusterString, targetClusterString, sourceTopicString, targetTopicString, null, true, true);
-    }
-
-    public static void copy(String sourceClusterString,
-                            String targetClusterString,
-                            String sourceTopicString) {
-        copy(sourceClusterString, targetClusterString, sourceTopicString, sourceTopicString, null, true, true);
+    public static void copyString(String sourceClusterString,
+                                  String targetClusterString,
+                                  String sourceTopicString,
+                                  String targetTopicString,
+                                  Fun<String, String> stringStringSmtFun) {
+        Fun<ConsumerRecord<byte[], byte[]>, ProducerRecord<byte[], byte[]>> smtFun =
+                consumerRecord -> {
+                    var outputString = stringStringSmtFun.apply(new String(consumerRecord.value()));
+                    var outputbytes = outputString.getBytes(StandardCharsets.UTF_8);
+                    return new ProducerRecord<>(
+                            targetTopicString, consumerRecord.partition(), consumerRecord.timestamp(),
+                            consumerRecord.key(), outputbytes, consumerRecord.headers());
+                };
+        Replicate.copy(sourceClusterString, targetClusterString, sourceTopicString, targetTopicString,
+                smtFun, true, true, true);
     }
 
     // Get current replication lag for source cluster clusterString, consumer group groupString
@@ -146,7 +152,7 @@ public class Replicate {
                                        Map<String, Integer> sourceTopicStringTargetPartitionsIntMap,
                                        Map<String, Integer> sourceTopicStringTargetReplicationFactorIntMap,
                                        boolean deleteExistingTopicBoolean) {
-        System.out.println("replicateTopics()");
+//        System.out.println("replicateTopics()");
         //
         sourceTopicStringTargetTopicStringMap
                 .keySet()
@@ -226,14 +232,14 @@ public class Replicate {
                                       Integer targetPartitionsInt,
                                       Integer targetReplicationFactorInt,
                                       boolean deleteExistingTopicBoolean) {
-        System.out.printf("sourceClusterString: %s\n", sourceClusterString);
-        System.out.printf("targetClusterString: %s\n", targetClusterString);
-        System.out.printf("sourceTopicString: %s\n", sourceTopicString);
-        System.out.printf("targetTopicString: %s\n", targetTopicString);
-        System.out.printf("targetStringStringMapMap: %s\n", targetStringStringMapMap.toString());
-        System.out.printf("targetPartitionsInt: %s\n", targetPartitionsInt);
-        System.out.printf("targetReplicationFactorInt: %s\n", targetReplicationFactorInt);
-        System.out.printf("deleteExistingTopicBoolean: %s\n", deleteExistingTopicBoolean);
+//        System.out.printf("sourceClusterString: %s\n", sourceClusterString);
+//        System.out.printf("targetClusterString: %s\n", targetClusterString);
+//        System.out.printf("sourceTopicString: %s\n", sourceTopicString);
+//        System.out.printf("targetTopicString: %s\n", targetTopicString);
+//        System.out.printf("targetStringStringMapMap: %s\n", targetStringStringMapMap.toString());
+//        System.out.printf("targetPartitionsInt: %s\n", targetPartitionsInt);
+//        System.out.printf("targetReplicationFactorInt: %s\n", targetReplicationFactorInt);
+//        System.out.printf("deleteExistingTopicBoolean: %s\n", deleteExistingTopicBoolean);
         //
         var sourceTopicStringTargetTopicStringMap = new HashMap<String, String>();
         sourceTopicStringTargetTopicStringMap.put(sourceTopicString, targetTopicString);
@@ -267,17 +273,17 @@ public class Replicate {
                                               boolean parallelBoolean,
                                               boolean fromBeginningBoolean,
                                               boolean untilLatestBoolean) {
-        System.out.println("replicateTopicContents()");
-        //
-        System.out.printf("sourceClusterString: %s\n", sourceClusterString);
-        System.out.printf("targetClusterString: %s\n", targetClusterString);
-        System.out.printf("sourceTopicStringTargetTopicStringMap: %s\n", sourceTopicStringTargetTopicStringMap.toString());
-        System.out.printf("sourceTopicStringPartitionIntTargetPartitionIntMapMap: %s\n", sourceTopicStringPartitionIntTargetPartitionIntMapMap);
-        System.out.printf("sourceTopicStartOffsetsMap: %s\n", sourceTopicStartOffsetsMap.toString());
-        System.out.printf("sourceTopicEndOffsetsMap: %s\n", sourceTopicEndOffsetsMap.toString());
-        System.out.printf("parallelBoolean: %s\n", parallelBoolean);
-        System.out.printf("fromBeginningBoolean: %s\n", fromBeginningBoolean);
-        System.out.printf("untilLatestBoolean: %s\n", untilLatestBoolean);
+//        System.out.println("replicateTopicContents()");
+//        //
+//        System.out.printf("sourceClusterString: %s\n", sourceClusterString);
+//        System.out.printf("targetClusterString: %s\n", targetClusterString);
+//        System.out.printf("sourceTopicStringTargetTopicStringMap: %s\n", sourceTopicStringTargetTopicStringMap.toString());
+//        System.out.printf("sourceTopicStringPartitionIntTargetPartitionIntMapMap: %s\n", sourceTopicStringPartitionIntTargetPartitionIntMapMap);
+//        System.out.printf("sourceTopicStartOffsetsMap: %s\n", sourceTopicStartOffsetsMap.toString());
+//        System.out.printf("sourceTopicEndOffsetsMap: %s\n", sourceTopicEndOffsetsMap.toString());
+//        System.out.printf("parallelBoolean: %s\n", parallelBoolean);
+//        System.out.printf("fromBeginningBoolean: %s\n", fromBeginningBoolean);
+//        System.out.printf("untilLatestBoolean: %s\n", untilLatestBoolean);
         //
         // Get list of source topics
         var sourceTopicStringList =
@@ -525,7 +531,7 @@ public class Replicate {
                                                String includeGroupRegexpString,
                                                List<String> excludeGroupStringList,
                                                String excludeGroupRegexpString) {
-        System.out.println("replicateConsumerGroups()");
+//        System.out.println("replicateConsumerGroups()");
         // Create name for the consumer group used for reading the time stamps
         var replicateConsumerGroupsGroupString = String.format("sp-replicate-consumer-groups-%s-%s",
                 sourceClusterString, targetClusterString);
@@ -730,7 +736,7 @@ public class Replicate {
         // Replicate original topic to temporary topic
         //
         String tmpTopicString = topicString + ".tmp";
-        Replicate.copy(clusterString, clusterString, topicString, tmpTopicString);
+        Replicate.copyBytes(clusterString, clusterString, topicString, tmpTopicString, null);
         //
         // Replicate temporary topic back to the original topic (and fix the schema IDs of the messages)
         //
@@ -762,13 +768,11 @@ public class Replicate {
                     //
                     return destValueBytes;
                 };
-        Replicate.copy(clusterString,
+        Replicate.copyBytes(clusterString,
                 clusterString,
                 tmpTopicString,
                 topicString,
-                fixSchemaSmtFun,
-                true,
-                true);
+                fixSchemaSmtFun);
         //
 //        Topic.delete(clusterString, tmpTopicString, false);
 //        try {

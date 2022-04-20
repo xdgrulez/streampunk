@@ -20,6 +20,11 @@ public class Topic {
     // DeleteRecordsResult 	deleteRecords(Map<TopicPartition,RecordsToDelete> recordsToDelete, DeleteRecordsOptions options)
 
     public static void create(String clusterString, String topicString,
+                              Integer numPartitionsInt) {
+        create(clusterString, topicString, numPartitionsInt, null, null);
+    }
+    
+    public static void create(String clusterString, String topicString,
                               Integer numPartitionsInt,
                               Integer replicationFactorInt,
                               Map<String, String> configStringStringMap) {
@@ -43,6 +48,10 @@ public class Topic {
         } catch (ExecutionException e) {
             throw new ExecutionRuntimeException(e);
         }
+    }
+
+    public static void delete(String clusterString, String topicString) {
+        delete(clusterString, topicString, true);
     }
 
     public static void delete(String clusterString, String topicString,

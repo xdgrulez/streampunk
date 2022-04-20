@@ -22,6 +22,15 @@ import java.util.stream.Collectors;
 
 public class Consumer {
 
+    public static int maxPollRecordsInt = 500;
+
+    public static long interactiveBatchSizeLong = 3;
+
+    public static String createGroupString(String topicString) {
+        var pidLong = ProcessHandle.current().pid();
+        return topicString + ".sp." + pidLong;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
     // Get KafkaConsumer
     ////////////////////////////////////////////////////////////////////////////////

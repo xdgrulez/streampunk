@@ -1,5 +1,6 @@
 package org.xdgrulez.streampunk.consumer;
 
+import org.xdgrulez.streampunk.helper.Helpers;
 import org.xdgrulez.streampunk.helper.fun.Pred;
 import org.xdgrulez.streampunk.helper.fun.Proc;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -26,9 +27,9 @@ public class ConsumerString extends Consumer {
     ////////////////////////////////////////////////////////////////////////////////
 
     public static void subscribe(String clusterString,
-                                       String topicString,
-                                       String groupString,
-                                       Map<Integer, Long> offsets) {
+                                 String topicString,
+                                 String groupString,
+                                 Map<Integer, Long> offsets) {
         var kafkaConsumer =
                 getKafkaConsumer(clusterString, groupString, null);
         subscribe(kafkaConsumer, topicString, offsets);
@@ -40,32 +41,23 @@ public class ConsumerString extends Consumer {
 
     public static void consume(String clusterString,
                                String topicString,
-                               Map<Integer, Long> startOffsets,
-                               Map<Integer, Long> endOffsets,
-                               Proc<ConsumerRecord<String, String>> doConsumerRecordProc,
-                               boolean interactiveBoolean) {
-        var pidLong = ProcessHandle.current().pid();
-        var groupString = topicString + ".sp.consume." + pidLong;
-        consume(clusterString, topicString, groupString, startOffsets, endOffsets, doConsumerRecordProc, null, 500, interactiveBoolean, 3);
+                               Map<Integer, Long> startOffsets) {
+        var groupString = createGroupString(topicString);
+        consume(clusterString, topicString, groupString, startOffsets, null,
+                null, null,
+                maxPollRecordsInt, false, interactiveBatchSizeLong);
     }
 
     public static void consume(String clusterString,
                                String topicString,
+                               String groupString,
                                Map<Integer, Long> startOffsets,
-                               Proc<ConsumerRecord<String, String>> doConsumerRecordProc) {
-        consume(clusterString, topicString, startOffsets, null, doConsumerRecordProc, true);
-    }
-
-    public static void consume(String clusterString,
-                                     String topicString,
-                                     String groupString,
-                                     Map<Integer, Long> startOffsets,
-                                     Map<Integer, Long> endOffsets,
-                                     Proc<ConsumerRecord<String, String>> doConsumerRecordProc,
-                                     Pred<ConsumerRecord<String, String>> untilConsumerRecordPred,
-                                     Integer maxPollRecordsInt,
-                                     boolean interactiveBoolean,
-                                     long interactiveBatchSizeLong) {
+                               Map<Integer, Long> endOffsets,
+                               Proc<ConsumerRecord<String, String>> doConsumerRecordProc,
+                               Pred<ConsumerRecord<String, String>> untilConsumerRecordPred,
+                               Integer maxPollRecordsInt,
+                               boolean interactiveBoolean,
+                               long interactiveBatchSizeLong) {
         var kafkaConsumer =
                 getKafkaConsumer(clusterString, groupString, maxPollRecordsInt);
         //
@@ -80,16 +72,16 @@ public class ConsumerString extends Consumer {
     ////////////////////////////////////////////////////////////////////////////////
 
     public static void consumePartition(String clusterString,
-                                              String topicString,
-                                              String groupString,
-                                              int partitionInt,
-                                              Long startOffsetLong,
-                                              Long endOffsetLong,
-                                              Proc<ConsumerRecord<String, String>> doConsumerRecordProc,
-                                              Pred<ConsumerRecord<String, String>> untilConsumerRecordPred,
-                                              Integer maxPollRecordsInt,
-                                              boolean interactiveBoolean,
-                                              long interactiveBatchSizeLong) {
+                                        String topicString,
+                                        String groupString,
+                                        int partitionInt,
+                                        Long startOffsetLong,
+                                        Long endOffsetLong,
+                                        Proc<ConsumerRecord<String, String>> doConsumerRecordProc,
+                                        Pred<ConsumerRecord<String, String>> untilConsumerRecordPred,
+                                        Integer maxPollRecordsInt,
+                                        boolean interactiveBoolean,
+                                        long interactiveBatchSizeLong) {
         var kafkaConsumer =
                 getKafkaConsumer(clusterString, groupString, maxPollRecordsInt);
         //

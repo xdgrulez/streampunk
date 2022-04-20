@@ -13,8 +13,7 @@ public class ProducerAvro extends Producer {
     ////////////////////////////////////////////////////////////////////////////////
 
     protected static KafkaProducer<GenericRecord, GenericRecord> getKafkaProducer(String clusterString) {
-        return (KafkaProducer<GenericRecord, GenericRecord>)
-                KafkaProducerEnum.INSTANCE.get(clusterString, KafkaAvroSerializer.class, KafkaAvroSerializer.class);
+        return (KafkaProducer<GenericRecord, GenericRecord>) KafkaProducerEnum.INSTANCE.get(clusterString, KafkaAvroSerializer.class, KafkaAvroSerializer.class);
     }
 
     ////////////////////////////////////////////////////////////////////////////////

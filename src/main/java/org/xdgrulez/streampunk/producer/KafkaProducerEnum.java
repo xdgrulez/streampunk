@@ -10,18 +10,16 @@ import java.util.Map;
 public enum KafkaProducerEnum {
     INSTANCE;
 
-    private Map<String, KafkaProducer<?, ?>> stringKafkaProducerMap = new HashMap<>();
+    private final Map<String, KafkaProducer<?, ?>> stringKafkaProducerMap = new HashMap<>();
 
     public KafkaProducer<?, ?> get(String clusterString,
                                    Class<?> keySerializerClass,
                                    Class<?> valueSerializerClass) {
         var string = clusterString + "_" + keySerializerClass.toString() + "_" + valueSerializerClass.toString();
-        KafkaProducer<?, ?> kafkaProducer = null;
+        KafkaProducer<?, ?> kafkaProducer;
         if (stringKafkaProducerMap.containsKey(string)) {
-//            System.out.println(1);
             kafkaProducer = stringKafkaProducerMap.get(string);
         } else {
-//            System.out.println(2);
             var properties = Helpers.loadProperties(String.format("./clusters/%s.properties", clusterString));
             properties.put("key.serializer", keySerializerClass);
             properties.put("value.serializer", valueSerializerClass);

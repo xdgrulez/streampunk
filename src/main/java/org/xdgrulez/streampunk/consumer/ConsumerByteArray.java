@@ -40,6 +40,15 @@ public class ConsumerByteArray extends Consumer {
 
     public static void consume(String clusterString,
                                String topicString,
+                               Map<Integer, Long> startOffsets) {
+        var groupString = createGroupString(topicString);
+        consume(clusterString, topicString, groupString, startOffsets, null,
+                null, null,
+                maxPollRecordsInt, false, interactiveBatchSizeLong);
+    }
+
+    public static void consume(String clusterString,
+                               String topicString,
                                String groupString,
                                Map<Integer, Long> startOffsets,
                                Map<Integer, Long> endOffsets,

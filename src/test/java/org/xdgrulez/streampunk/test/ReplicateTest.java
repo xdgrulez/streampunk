@@ -1,6 +1,7 @@
 package org.xdgrulez.streampunk.test;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.jupiter.api.Test;
 import org.xdgrulez.streampunk.addon.Replicate;
 import org.xdgrulez.streampunk.admin.Group;
 import org.xdgrulez.streampunk.admin.Topic;

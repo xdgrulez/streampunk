@@ -47,7 +47,7 @@ dependencies {
 test {
 	useJUnitPlatform()
 
-	jvmArgs '-Xmx1G'
+//	jvmArgs '-Xmx1G'
 }
 
 jar {

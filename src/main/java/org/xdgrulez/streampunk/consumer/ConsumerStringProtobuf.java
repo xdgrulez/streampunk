@@ -42,21 +42,11 @@ public class ConsumerStringProtobuf extends Consumer {
 
     public static void consume(String clusterString,
                                String topicString,
-                               Map<Integer, Long> startOffsets,
-                               Map<Integer, Long> endOffsets,
-                               Proc<ConsumerRecord<String, DynamicMessage>> doConsumerRecordProc,
-                               boolean interactiveBoolean) {
-        var pidLong = ProcessHandle.current().pid();
-        var groupString = topicString + ".sp.consumerstringprotobuf.consume." + pidLong;
-//        System.out.println(groupString);
-        consume(clusterString, topicString, groupString, startOffsets, endOffsets, doConsumerRecordProc, null, 500, interactiveBoolean, 3);
-    }
-
-    public static void consume(String clusterString,
-                               String topicString,
-                               Map<Integer, Long> startOffsets,
-                               Proc<ConsumerRecord<String, DynamicMessage>> doConsumerRecordProc) {
-        consume(clusterString, topicString, startOffsets, null, doConsumerRecordProc, true);
+                               Map<Integer, Long> startOffsets) {
+        var groupString = createGroupString(topicString);
+        consume(clusterString, topicString, groupString, startOffsets, null,
+                null, null,
+                maxPollRecordsInt, false, interactiveBatchSizeLong);
     }
 
     public static void consume(String clusterString,
