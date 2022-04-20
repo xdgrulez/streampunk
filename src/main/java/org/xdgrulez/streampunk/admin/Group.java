@@ -12,8 +12,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class Group {
+    public static void delete(String clusterString, String groupString) {
+        delete(clusterString, groupString, true);
+    }
+
     public static void delete(String clusterString, String groupString,
-                       boolean interactiveBoolean) {
+                              boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to delete consumer group \"%s\" (y/N)?",
                         groupString))) {
@@ -30,8 +34,8 @@ public class Group {
     }
 
     public static void deleteOffsets(String clusterString, String groupString,
-                              Map<String, List<Integer>> topicStringPartitionIntListMap,
-                              boolean interactiveBoolean) {
+                                     Map<String, List<Integer>> topicStringPartitionIntListMap,
+                                     boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to delete offsets for consumer group \"%s\" (y/N)?",
                         groupString))) {
@@ -39,8 +43,8 @@ public class Group {
             if (topicStringPartitionIntListMap != null) {
                 topicPartitionSet =
                         topicStringPartitionIntListMap.entrySet()
-                        .stream()
-                        .flatMap(topicStringPartitionIntListEntry ->
+                                .stream()
+                                .flatMap(topicStringPartitionIntListEntry ->
                                 {
                                     var topicString = topicStringPartitionIntListEntry.getKey();
                                     var partitionIntList = topicStringPartitionIntListEntry.getValue();
@@ -48,7 +52,7 @@ public class Group {
                                             .stream()
                                             .map(partitionInt -> new TopicPartition(topicString, partitionInt));
                                 })
-                        .collect(Collectors.toSet());
+                                .collect(Collectors.toSet());
             }
             //
             var deleteConsumerGroupOffsetsResult = AdminClientEnum.INSTANCE.get(clusterString)
@@ -64,8 +68,8 @@ public class Group {
     }
 
     public static void deleteOffsets(String clusterString, String groupString,
-                              String topicString, List<Integer> partitionIntList,
-                              boolean interactiveBoolean) {
+                                     String topicString, List<Integer> partitionIntList,
+                                     boolean interactiveBoolean) {
         var topicStringPartitionIntListMap = new HashMap<String, List<Integer>>();
         topicStringPartitionIntListMap.put(topicString, partitionIntList);
         deleteOffsets(clusterString, groupString, topicStringPartitionIntListMap, interactiveBoolean);
@@ -87,7 +91,8 @@ public class Group {
     }
 
     public static void setOffsets(String clusterString, String groupString,
-                                  Map<String, Map<Integer, Long>> topicStringOffsetsMap, boolean interactiveBoolean) {
+                                  Map<String, Map<Integer, Long>> topicStringOffsetsMap,
+                                  boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to alter the offsets of consumer group \"%s\" (y/N)?",
                         groupString))) {
@@ -145,7 +150,7 @@ public class Group {
         }
         //
         Map<String, Map<Integer, Long>> topicStringOffsetsMap = new HashMap<>();
-        for (Map.Entry<TopicPartition, OffsetAndMetadata> entry: topicPartitionOffsetAndMetadataMap.entrySet()) {
+        for (Map.Entry<TopicPartition, OffsetAndMetadata> entry : topicPartitionOffsetAndMetadataMap.entrySet()) {
             var topicString = entry.getKey().topic();
             var partitionInt = entry.getKey().partition();
             var offsetAndMetadata = entry.getValue();

@@ -45,7 +45,7 @@ public class ConsumerString extends Consumer {
         var groupString = createGroupString(topicString);
         consume(clusterString, topicString, groupString, startOffsets, null,
                 null, null,
-                maxPollRecordsInt, false, interactiveBatchSizeLong);
+                maxPollRecordsInt, true, interactiveBatchSizeLong);
     }
 
     public static void consume(String clusterString,
