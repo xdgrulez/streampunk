@@ -71,10 +71,6 @@ public class Helpers {
         }
     }
 
-    public static boolean yesNoPrompt(String promptString) {
-        return yesNoPrompt(promptString, true);
-    }
-
     public static boolean yesNoPrompt(String promptString, boolean defaultBoolean) {
 //        System.out.println(promptString);
         var console = System.console();

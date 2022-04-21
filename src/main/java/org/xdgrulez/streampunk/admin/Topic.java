@@ -58,7 +58,7 @@ public class Topic {
                               boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to delete topic \"%s\" (y/N)?",
-                        topicString))) {
+                        topicString), false)) {
             var deleteTopicsResult = AdminClientEnum.INSTANCE.get(clusterString)
                     .deleteTopics(Collections.singletonList(topicString));
             try {

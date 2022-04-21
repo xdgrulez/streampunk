@@ -20,7 +20,7 @@ public class Group {
                               boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to delete consumer group \"%s\" (y/N)?",
-                        groupString))) {
+                        groupString), false)) {
             var deleteConsumerGroupsResult = AdminClientEnum.INSTANCE.get(clusterString)
                     .deleteConsumerGroups(Collections.singleton(groupString));
             try {
@@ -38,7 +38,7 @@ public class Group {
                                      boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to delete offsets for consumer group \"%s\" (y/N)?",
-                        groupString))) {
+                        groupString), false)) {
             Set<TopicPartition> topicPartitionSet = new HashSet<>();
             if (topicStringPartitionIntListMap != null) {
                 topicPartitionSet =
@@ -95,7 +95,7 @@ public class Group {
                                   boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to alter the offsets of consumer group \"%s\" (y/N)?",
-                        groupString))) {
+                        groupString), false)) {
             var topicPartitionOffsetAndMetadataMap = topicStringOffsetsMap
                     .entrySet()
                     .stream()
@@ -179,7 +179,7 @@ public class Group {
                                      boolean interactiveBoolean) {
         if (!interactiveBoolean ||
                 Helpers.yesNoPrompt(String.format("Are you sure to remove members from consumer group \"%s\" (y/N)?",
-                        groupString))) {
+                        groupString), false)) {
             Set<MemberToRemove> memberToRemoveSet = new HashSet<>();
             if (groupInstanceIdStringList != null) {
                 memberToRemoveSet = groupInstanceIdStringList
