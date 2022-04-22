@@ -9,4 +9,5 @@ _(__  )/ /_ _  /   /  __/ /_/ /_  / / / / /_  /_/ / /_/ /_  / / /  ,<
                                            /_/
 ```
 
-The Extensible Polyglot Kafka API
+The Difference Engine for Unlocking the Kafka Black Box
+
