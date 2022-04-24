@@ -11,3 +11,7 @@ _(__  )/ /_ _  /   /  __/ /_/ /_  / / / / /_  /_/ / /_/ /_  / / /  ,<
 
 The Difference Engine for Unlocking the Kafka Black Box
 
+Started by Ralph M. Debusmann, CTO of Forecasty.AI - building No-Code Deep Tech for the future.
+
+Check out our new Commodity Desk where commodity price forecasting meets Natural Language Processing:
+https://forecasty.ai/offerings/commodity-desk/
