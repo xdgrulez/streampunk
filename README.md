@@ -16,9 +16,7 @@ Started by Ralph M. Debusmann, CTO of Forecasty.AI - building No-Code Deep Tech 
 Check out our new Commodity Desk where commodity price forecasting meets Natural Language Processing:
 https://forecasty.ai/offerings/commodity-desk/
 
-## Install
-
-Four easy steps...
+## How Can I Run It?
 
 1. To run Streampunk, you first have to download and install GraalVM for Java 11 here: https://www.graalvm.org/downloads/. After you have installed GraalVM, make sure that you install the programming languages that you like most - e.g. "gu install python" gives you Python-support, "gu install R" is for R etc. (this is documented here: https://www.graalvm.org/22.0/docs/getting-started/).
 
