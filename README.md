@@ -98,7 +98,7 @@ None
 
 If more people contribute to Streampunk, we can of course implement all these conversions directly inside the language wrapper (e.g. sp.py), I just haven't done it yet because Streampunk is still very volatile and basically whenever you would change anything in the Streampunk JAR, you would also have to change all the language wrappers accordingly, which I have yet tried to avoid...
 
-## Support for Languages Other than Python
+## Wrappers for Languages Other than Python
 
 Not yet done - would be easy to add wrappers similar to sp.py for Javascript, R, Ruby... please help here as well!
 
