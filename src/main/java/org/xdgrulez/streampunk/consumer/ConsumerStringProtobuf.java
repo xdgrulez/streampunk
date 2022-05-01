@@ -18,7 +18,7 @@ public class ConsumerStringProtobuf extends Consumer {
     ////////////////////////////////////////////////////////////////////////////////
 
     protected static KafkaConsumer<String, DynamicMessage> getKafkaConsumer(
-            String clusterString, String groupString, Integer maxPollRecordsInt) {
+            String clusterString, String groupString, int maxPollRecordsInt) {
         return getKafkaConsumer(clusterString, groupString, maxPollRecordsInt,
                 StringDeserializer.class, KafkaProtobufDeserializer.class);
     }
@@ -30,9 +30,10 @@ public class ConsumerStringProtobuf extends Consumer {
     public static void subscribe(String clusterString,
                                  String topicString,
                                  String groupString,
-                                 Map<Integer, Long> offsets) {
+                                 Map<Integer, Long> offsets,
+                                 int maxPollRecordsInt) {
         var kafkaConsumer =
-                getKafkaConsumer(clusterString, groupString, null);
+                getKafkaConsumer(clusterString, groupString, maxPollRecordsInt);
         subscribe(kafkaConsumer, topicString, offsets);
     }
 
@@ -46,7 +47,7 @@ public class ConsumerStringProtobuf extends Consumer {
                                Map<Integer, Long> startOffsets) {
         consume(clusterString, topicString, groupString, startOffsets, null,
                 null, null,
-                maxPollRecordsInt, true, interactiveBatchSizeLong);
+                INTERACTIVE_MAX_POLL_RECORDS, INTERACTIVE_MAX_RETRIES, true, INTERACTIVE_BATCH_SIZE);
     }
 
     public static void consume(String clusterString,
@@ -56,7 +57,8 @@ public class ConsumerStringProtobuf extends Consumer {
                                Map<Integer, Long> endOffsets,
                                Proc<ConsumerRecord<String, DynamicMessage>> doConsumerRecordProc,
                                Pred<ConsumerRecord<String, DynamicMessage>> untilConsumerRecordPred,
-                               Integer maxPollRecordsInt,
+                               int maxPollRecordsInt,
+                               int maxRetriesInt,
                                boolean interactiveBoolean,
                                long interactiveBatchSizeLong) {
         var kafkaConsumer =
@@ -65,7 +67,8 @@ public class ConsumerStringProtobuf extends Consumer {
         subscribe(kafkaConsumer, topicString, startOffsets);
         //
         poll(kafkaConsumer, topicString, endOffsets,
-                doConsumerRecordProc, untilConsumerRecordPred, interactiveBoolean, interactiveBatchSizeLong);
+                doConsumerRecordProc, untilConsumerRecordPred,
+                maxRetriesInt, interactiveBoolean, interactiveBatchSizeLong);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -80,14 +83,16 @@ public class ConsumerStringProtobuf extends Consumer {
                                         Long endOffsetLong,
                                         Proc<ConsumerRecord<String, DynamicMessage>> doConsumerRecordProc,
                                         Pred<ConsumerRecord<String, DynamicMessage>> untilConsumerRecordPred,
-                                        Integer maxPollRecordsInt,
+                                        int maxPollRecordsInt,
+                                        int maxRetriesInt,
                                         boolean interactiveBoolean,
                                         long interactiveBatchSizeLong) {
         var kafkaConsumer =
                 getKafkaConsumer(clusterString, groupString, maxPollRecordsInt);
         //
         Consumer.consumePartition(kafkaConsumer, topicString, partitionInt, startOffsetLong, endOffsetLong,
-                doConsumerRecordProc, untilConsumerRecordPred, interactiveBoolean, interactiveBatchSizeLong);
+                doConsumerRecordProc, untilConsumerRecordPred,
+                maxRetriesInt, interactiveBoolean, interactiveBatchSizeLong);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -102,11 +107,14 @@ public class ConsumerStringProtobuf extends Consumer {
             List<Map<Integer, Long>> endOffsetsList,
             List<Proc<ConsumerRecord<String, DynamicMessage>>> doConsumerRecordProcList,
             List<Pred<ConsumerRecord<String, DynamicMessage>>> untilConsumerRecordPredList,
-            Integer maxPollRecordsInt) {
+            int maxPollRecordsInt,
+            int maxRetriesInt) {
         var kafkaConsumer =
                 getKafkaConsumer(clusterString, groupString, maxPollRecordsInt);
         //
-        Consumer.consumeParallel(kafkaConsumer, topicStringList, startOffsetsList, endOffsetsList, doConsumerRecordProcList, untilConsumerRecordPredList);
+        Consumer.consumeParallel(kafkaConsumer, topicStringList, startOffsetsList, endOffsetsList,
+                doConsumerRecordProcList, untilConsumerRecordPredList,
+                maxRetriesInt);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -120,12 +128,13 @@ public class ConsumerStringProtobuf extends Consumer {
             int nInt,
             int partitionInt,
             Long offsetLong,
+            int maxRetriesInt,
             boolean interactiveBoolean,
             long interactiveBatchSizeLong) {
         var kafkaConsumer =
                 getKafkaConsumer(clusterString, groupString, nInt);
         //
         return Consumer.consumeN(kafkaConsumer, topicString, nInt, partitionInt, offsetLong,
-                interactiveBoolean, interactiveBatchSizeLong);
+                maxRetriesInt, interactiveBoolean, interactiveBatchSizeLong);
     }
 }

@@ -13,7 +13,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
@@ -22,9 +21,13 @@ import java.util.stream.Collectors;
 
 public class Consumer {
 
-    public static int maxPollRecordsInt = 500;
+    public static long INTERACTIVE_BATCH_SIZE = 3;
 
-    public static long interactiveBatchSizeLong = 3;
+    public static int INTERACTIVE_MAX_RETRIES = 0;
+    public static int NON_INTERACTIVE_MAX_RETRIES = 0;
+
+    public static int INTERACTIVE_MAX_POLL_RECORDS = (int) INTERACTIVE_BATCH_SIZE;
+    public static int NON_INTERACTIVE_MAX_POLL_RECORDS = 500;
 
     public static String createGroupString(String topicString) {
         var pidLong = ProcessHandle.current().pid();
@@ -36,7 +39,7 @@ public class Consumer {
     ////////////////////////////////////////////////////////////////////////////////
 
     protected static <Key, Value> KafkaConsumer<Key, Value> getKafkaConsumer(
-            String clusterString, String groupString, Integer maxPollRecordsInt,
+            String clusterString, String groupString, int maxPollRecordsInt,
             Class<?> keyDeserializerClass, Class<?> valueDeserializerClass) {
         var properties = Helpers.loadProperties(String.format("./clusters/%s.properties", clusterString));
         properties.put("auto.offset.reset", "earliest");
@@ -46,9 +49,7 @@ public class Consumer {
         //
         properties.put("enable.auto.commit", "false");
         //
-        if (maxPollRecordsInt != null && maxPollRecordsInt > 0) {
-            properties.put("max.poll.records", String.valueOf(maxPollRecordsInt));
-        }
+        properties.put("max.poll.records", String.valueOf(maxPollRecordsInt));
         //
         properties.put("key.deserializer", keyDeserializerClass);
         properties.put("value.deserializer", valueDeserializerClass);
@@ -90,6 +91,7 @@ public class Consumer {
                                             Map<Integer, Long> endOffsets,
                                             Proc<ConsumerRecord<Key, Value>> doConsumerRecordProc,
                                             Pred<ConsumerRecord<Key, Value>> untilConsumerRecordPred,
+                                            int maxRetriesInt,
                                             boolean interactiveBoolean,
                                             long interactiveBatchSizeLong) {
         var breakBoolean = false;
@@ -106,12 +108,11 @@ public class Consumer {
             }
         }
         var retriesInt = 0;
-        var maxRetriesInt = 200;
         do {
             var consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(1));
             if (consumerRecords.isEmpty()) {
                 retriesInt++;
-                if (retriesInt == maxRetriesInt) {
+                if (retriesInt >= maxRetriesInt) {
                     breakBoolean = true;
                     System.out.printf("poll(): Stopping after %d retries.\n", maxRetriesInt);
                     continue;
@@ -220,6 +221,7 @@ public class Consumer {
                                                         Long endOffsetLong,
                                                         Proc<ConsumerRecord<Key, Value>> doConsumerRecordProc,
                                                         Pred<ConsumerRecord<Key, Value>> untilConsumerRecordPred,
+                                                        int maxRetriesInt,
                                                         boolean interactiveBoolean,
                                                         long interactiveBatchSizeLong) {
         var topicPartition = new TopicPartition(topicString, partitionInt);
@@ -232,7 +234,7 @@ public class Consumer {
             endOffsets.put(partitionInt, endOffsetLong);
         }
         //
-        poll(kafkaConsumer, topicString, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, interactiveBoolean, interactiveBatchSizeLong);
+        poll(kafkaConsumer, topicString, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, maxRetriesInt, interactiveBoolean, interactiveBatchSizeLong);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +246,8 @@ public class Consumer {
                                                        List<Map<Integer, Long>> startOffsetsList,
                                                        List<Map<Integer, Long>> endOffsetsList,
                                                        List<Proc<ConsumerRecord<Key, Value>>> doConsumerRecordProcList,
-                                                       List<Pred<ConsumerRecord<Key, Value>>> untilConsumerRecordPredList) {
+                                                       List<Pred<ConsumerRecord<Key, Value>>> untilConsumerRecordPredList,
+                                                       int maxRetriesInt) {
         List<Runnable> runnableList = new ArrayList<>();
         for (int i = 0; i < topicStringList.size(); i++) {
             var topicString = topicStringList.get(i);
@@ -256,7 +259,7 @@ public class Consumer {
             Runnable runnable = () -> {
                 subscribe(kafkaConsumer, topicString, startOffsets);
                 //
-                poll(kafkaConsumer, topicString, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, false, 0);
+                poll(kafkaConsumer, topicString, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, maxRetriesInt, false, 0);
             };
             runnableList.add(runnable);
         }
@@ -299,6 +302,7 @@ public class Consumer {
             long nLong,
             int partitionInt,
             Long offsetLong,
+            int maxRetriesInt,
             boolean interactiveBoolean,
             long interactiveBatchSizeLong) {
         var topicPartition = new TopicPartition(topicString, partitionInt);
@@ -313,7 +317,7 @@ public class Consumer {
         Pred<ConsumerRecord<Key, Value>> untilConsumerRecordPred =
                 value -> consumerRecordList.size() >= nLong;
         //
-        poll(kafkaConsumer, topicString, null, doConsumerRecordProc, untilConsumerRecordPred, interactiveBoolean, interactiveBatchSizeLong);
+        poll(kafkaConsumer, topicString, null, doConsumerRecordProc, untilConsumerRecordPred, maxRetriesInt, interactiveBoolean, interactiveBatchSizeLong);
         //
         return consumerRecordList;
     }

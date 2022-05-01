@@ -1,5 +1,6 @@
 package org.xdgrulez.streampunk.admin;
 
+import org.xdgrulez.streampunk.consumer.Consumer;
 import org.xdgrulez.streampunk.consumer.ConsumerByteArray;
 import org.xdgrulez.streampunk.exception.ExecutionRuntimeException;
 import org.xdgrulez.streampunk.exception.InterruptedRuntimeException;
@@ -216,6 +217,7 @@ public class Topic {
                             1,
                             partitionInt,
                             i,
+                            Consumer.NON_INTERACTIVE_MAX_RETRIES,
                             false,
                             1);
         }

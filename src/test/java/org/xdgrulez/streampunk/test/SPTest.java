@@ -6,10 +6,7 @@ import org.xdgrulez.streampunk.addon.*;
 import org.xdgrulez.streampunk.admin.Cluster;
 import org.xdgrulez.streampunk.admin.Group;
 import org.xdgrulez.streampunk.admin.Topic;
-import org.xdgrulez.streampunk.consumer.ConsumerByteArray;
-import org.xdgrulez.streampunk.consumer.ConsumerString;
-import org.xdgrulez.streampunk.consumer.ConsumerStringAvro;
-import org.xdgrulez.streampunk.consumer.ConsumerStringProtobuf;
+import org.xdgrulez.streampunk.consumer.*;
 import org.xdgrulez.streampunk.helper.Helpers;
 import org.xdgrulez.streampunk.helper.fun.Fun;
 import org.xdgrulez.streampunk.helper.fun.Pred;
@@ -72,6 +69,7 @@ public class SPTest {
                 1,
                 0,
                 0L,
+                Consumer.NON_INTERACTIVE_MAX_RETRIES,
                 false,
                 1);
         var genericRecord1 = consumerRecordList1.get(0).value();
@@ -87,6 +85,7 @@ public class SPTest {
                     1,
                     0,
                     0L,
+                    Consumer.NON_INTERACTIVE_MAX_RETRIES,
                     false,
                     1);
         });
@@ -101,6 +100,7 @@ public class SPTest {
                 1,
                 0,
                 null,
+                Consumer.NON_INTERACTIVE_MAX_RETRIES,
                 false,
                 1);
         var genericRecord2 = consumerRecordList2.get(0).value();
@@ -142,6 +142,7 @@ public class SPTest {
                 1,
                 0,
                 0L,
+                Consumer.NON_INTERACTIVE_MAX_RETRIES,
                 false,
                 1);
         var genericRecord1 = consumerRecordList1.get(0).value();
@@ -159,6 +160,7 @@ public class SPTest {
                     1,
                     0,
                     0L,
+                    Consumer.NON_INTERACTIVE_MAX_RETRIES,
                     false,
                     1);
         });
@@ -264,6 +266,7 @@ public class SPTest {
                 1,
                 0,
                 null,
+                Consumer.NON_INTERACTIVE_MAX_RETRIES,
                 false,
                 1);
         var genericRecord = consumerRecordList.get(0).value();
@@ -293,7 +296,8 @@ public class SPTest {
                         "syntax = \"proto3\"; message Hotel { string HotelName = 1 [default = null]; string Description = 2; }");
         ProducerStringProtobuf.produce(clusterString, topicString, "Marriott", valueDynamicMessageProduce);
         var consumerRecordList =
-                ConsumerStringProtobuf.consumeN(clusterString, topicString, "test", 1, 0, 0L, false, 1);
+                ConsumerStringProtobuf.consumeN(clusterString, topicString, "test", 1, 0,
+                        0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 
         var keyString = consumerRecordList.get(0).key();
         assertEquals("Marriott", keyString);

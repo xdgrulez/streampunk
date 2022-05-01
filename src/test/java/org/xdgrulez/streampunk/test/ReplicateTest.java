@@ -1,10 +1,10 @@
 package org.xdgrulez.streampunk.test;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.junit.jupiter.api.Test;
 import org.xdgrulez.streampunk.addon.Replicate;
 import org.xdgrulez.streampunk.admin.Group;
 import org.xdgrulez.streampunk.admin.Topic;
+import org.xdgrulez.streampunk.consumer.Consumer;
 import org.xdgrulez.streampunk.consumer.ConsumerString;
 import org.xdgrulez.streampunk.producer.ProducerString;
 
@@ -96,13 +96,13 @@ public class ReplicateTest {
         // Check whether the content of the test topic is correctly replicated
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "testtopic1.copy.group",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         var consumerRecordList2 =
                 ConsumerString.consumeN("local", "testtopic2.copy", "testtopic2.copy.group",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         assertEquals("record2_1", consumerRecordList2.get(0).value());
         assertEquals("record2_2", consumerRecordList2.get(1).value());
         assertEquals("record2_3", consumerRecordList2.get(2).value());
@@ -156,19 +156,19 @@ public class ReplicateTest {
         // Check whether the content of the test topic is correctly replicated
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "testtopic1.copy.group",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         //
         var consumerRecordList22 =
                 ConsumerString.consumeN("local", "testtopic2.copy", "testtopic2.copy.group",
-                        2, 2, 0L, false, 1);
+                        2, 2, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         assertEquals("record2_1", consumerRecordList22.get(0).value());
         assertEquals("record2_2", consumerRecordList22.get(1).value());
         var consumerRecordList21 =
                 ConsumerString.consumeN("local", "testtopic2.copy", "testtopic2.copy.group",
-                        1, 1, 0L, false, 1);
+                        1, 1, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         assertEquals("record2_3", consumerRecordList21.get(0).value());
     }
 
@@ -223,32 +223,32 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "group1.copy",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 //        System.out.println(consumerRecordList1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         var consumerRecordList2 =
                 ConsumerString.consumeN("local", "testtopic2.copy", "group1.copy",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 //        System.out.println(consumerRecordList2);
         assertEquals("record2_1", consumerRecordList2.get(0).value());
         assertEquals("record2_2", consumerRecordList2.get(1).value());
         assertEquals("record2_3", consumerRecordList2.get(2).value());
         // Create test consumer groups
         ConsumerString.consumeN("local", "testtopic1", "group1",
-                1, 0, 0L, false, 1);
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group2",
-                1, 0, 1L, false, 1);
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group3",
-                1, 0, 2L, false, 1);
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         ConsumerString.consumeN("local", "testtopic2", "group1",
-                1, 0, 0L, false, 1);
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic2", "group2",
-                1, 0, 1L, false, 1);
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic2", "group3",
-                1, 0, 2L, false, 1);
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         assertEquals(1,
                 Group.getOffsets("local", "group1").get("testtopic1").get(0));
@@ -367,18 +367,18 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "group1.copy",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 //        System.out.println(consumerRecordList1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         // Create test consumer groups
         ConsumerString.consumeN("local", "testtopic1", "group1",
-                1, 0, 0L, false, 1);
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group2",
-                1, 0, 1L, false, 1);
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group3",
-                1, 0, 2L, false, 1);
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         assertEquals(1,
                 Group.getOffsets("local", "group1").get("testtopic1").get(0));
@@ -446,18 +446,18 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "group1.copy",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 //        System.out.println(consumerRecordList1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         // Create test consumer groups
         ConsumerString.consumeN("local", "testtopic1", "group1",
-                1, 0, 0L, false, 1);
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group2",
-                1, 0, 1L, false, 1);
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group3",
-                1, 0, 2L, false, 1);
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         assertEquals(1,
                 Group.getOffsets("local", "group1").get("testtopic1").get(0));
@@ -525,18 +525,18 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "group1.copy",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 //        System.out.println(consumerRecordList1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         // Create test consumer groups
         ConsumerString.consumeN("local", "testtopic1", "group1",
-                1, 0, 0L, false, 1);
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group2",
-                1, 0, 1L, false, 1);
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group3",
-                1, 0, 2L, false, 1);
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         assertEquals(1,
                 Group.getOffsets("local", "group1").get("testtopic1").get(0));
@@ -602,18 +602,18 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList1 =
                 ConsumerString.consumeN("local", "testtopic1.copy", "group1.copy",
-                        3, 0, 0L, false, 1);
+                        3, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
 //        System.out.println(consumerRecordList1);
         assertEquals("record1_1", consumerRecordList1.get(0).value());
         assertEquals("record1_2", consumerRecordList1.get(1).value());
         assertEquals("record1_3", consumerRecordList1.get(2).value());
         // Create test consumer groups
         ConsumerString.consumeN("local", "testtopic1", "group1",
-                1, 0, 0L, false, 1);
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group2",
-                1, 0, 1L, false, 1);
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         ConsumerString.consumeN("local", "testtopic1", "group3",
-                1, 0, 2L, false, 1);
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         assertEquals(1,
                 Group.getOffsets("local", "group1").get("testtopic1").get(0));
@@ -701,7 +701,7 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList =
                 ConsumerString.consumeN("local", "testtopic.copy", "group.copy",
-                        6, 0, 0L, false, 1);
+                        6, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         var recordStringList = consumerRecordList.stream().map(ConsumerRecord::value).collect(Collectors.toList());
         assertTrue(recordStringList.contains("record1_1"));
         assertTrue(recordStringList.contains("record1_2"));
@@ -711,9 +711,9 @@ public class ReplicateTest {
         assertTrue(recordStringList.contains("record2_3"));
         // Create test consumer group
         ConsumerString.consumeN("local", "testtopic", "group",
-                1, 0, 2L, false, 1).get(0).timestamp();
+                1, 0, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).timestamp();
         ConsumerString.consumeN("local", "testtopic", "group",
-                1, 1, 1L, false, 1).get(0).timestamp();
+                1, 1, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).timestamp();
         // Check the offsets of the test consumer group
         assertEquals(3, Group.getOffsets("local", "group").get("testtopic").get(0));
         assertEquals(2, Group.getOffsets("local", "group").get("testtopic").get(1));
@@ -729,7 +729,7 @@ public class ReplicateTest {
         // Check whether the consumer group is correctly replicated
         var targetValueString =
                 ConsumerString.consumeN("local", "testtopic.copy", "group",
-                        1, 0, null, false, 1).get(0).value();
+                        1, 0, null, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).value();
         assertEquals("record2_3", targetValueString);
     }
 
@@ -794,7 +794,7 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         var consumerRecordList =
                 ConsumerString.consumeN("local", "testtopic.copy", "group.copy",
-                        6, 0, 0L, false, 1);
+                        6, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         List<String> recordStringList = consumerRecordList.stream().map(ConsumerRecord::value).collect(Collectors.toList());
         assertTrue(recordStringList.contains("record1_1"));
         assertTrue(recordStringList.contains("record1_2"));
@@ -804,9 +804,9 @@ public class ReplicateTest {
         assertTrue(recordStringList.contains("record2_3"));
         // Create test consumer group
         ConsumerString.consumeN("local", "testtopic", "group",
-                1, 0, 1L, false, 1).get(0).timestamp();
+                1, 0, 1L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).timestamp();
         ConsumerString.consumeN("local", "testtopic", "group",
-                1, 1, 2L, false, 1).get(0).timestamp();
+                1, 1, 2L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).timestamp();
         // Check the offsets of the test consumer group
         assertEquals(2, Group.getOffsets("local", "group").get("testtopic").get(0));
         assertEquals(3, Group.getOffsets("local", "group").get("testtopic").get(1));
@@ -822,7 +822,7 @@ public class ReplicateTest {
         // Check whether the consumer group is correctly replicated
         String targetValueString =
                 ConsumerString.consumeN("local", "testtopic.copy", "group",
-                        1, 0, null, false, 1).get(0).value();
+                        1, 0, null, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).value();
         assertEquals("record1_3", targetValueString);
     }
 
@@ -888,7 +888,7 @@ public class ReplicateTest {
         // Check whether the replicated content of the test topic exists
         List<ConsumerRecord<String, String>> consumerRecordList =
                 ConsumerString.consumeN("local", "testtopic.copy", "group.copy",
-                        6, 0, 0L, false, 1);
+                        6, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         List<String> recordStringList = consumerRecordList.stream().map(ConsumerRecord::value).collect(Collectors.toList());
         assertTrue(recordStringList.contains("record1_1"));
         assertTrue(recordStringList.contains("record1_2"));
@@ -898,9 +898,9 @@ public class ReplicateTest {
         assertTrue(recordStringList.contains("record2_3"));
         // Create test consumer group
         ConsumerString.consumeN("local", "testtopic", "group",
-                1, 0, 0L, false, 1).get(0).timestamp();
+                1, 0, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).timestamp();
         ConsumerString.consumeN("local", "testtopic", "group",
-                1, 1, 0L, false, 1).get(0).timestamp();
+                1, 1, 0L, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).timestamp();
         // Check the offsets of the test consumer group
         assertEquals(1, Group.getOffsets("local", "group").get("testtopic").get(0));
         assertEquals(1, Group.getOffsets("local", "group").get("testtopic").get(1));
@@ -916,7 +916,7 @@ public class ReplicateTest {
         // Check whether the consumer group is correctly replicated
         String targetValueString =
                 ConsumerString.consumeN("local", "testtopic.copy", "group",
-                        1, 0, null, false, 1).get(0).value();
+                        1, 0, null, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1).get(0).value();
         assertEquals("record1_2", targetValueString);
     }
 }

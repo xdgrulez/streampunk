@@ -3,6 +3,7 @@ package org.xdgrulez.streampunk.addon;
 import org.xdgrulez.streampunk.admin.Cluster;
 import org.xdgrulez.streampunk.admin.Group;
 import org.xdgrulez.streampunk.admin.Topic;
+import org.xdgrulez.streampunk.consumer.Consumer;
 import org.xdgrulez.streampunk.consumer.ConsumerByteArray;
 import org.xdgrulez.streampunk.exception.InterruptedRuntimeException;
 import org.xdgrulez.streampunk.helper.fun.Fun;
@@ -67,10 +68,10 @@ public class Replicate {
     }
 
     public static void copyBytes(String sourceClusterString,
-                            String targetClusterString,
-                            String sourceTopicString,
-                            String targetTopicString,
-                            Fun<byte[], byte[]> bytesBytesSmtFun) {
+                                 String targetClusterString,
+                                 String sourceTopicString,
+                                 String targetTopicString,
+                                 Fun<byte[], byte[]> bytesBytesSmtFun) {
         Fun<ConsumerRecord<byte[], byte[]>, ProducerRecord<byte[], byte[]>> smtFun =
                 consumerRecord -> {
                     var outputbytes = bytesBytesSmtFun.apply(consumerRecord.value());
@@ -443,7 +444,9 @@ public class Replicate {
                     sourceEndOffsetsList,
                     sourceDoConsumerRecordProcList,
                     sourceUntilConsumerRecordPredList,
-                    1);
+                    Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS,
+                    Consumer.NON_INTERACTIVE_MAX_RETRIES
+            );
         } else {
             for (var i = 0; i < sourceTopicStringList.size(); i++) {
                 var sourceTopicString = sourceTopicStringList.get(i);
@@ -479,7 +482,8 @@ public class Replicate {
                         sourceEndOffsets,
                         sourceDoConsumerRecordProc,
                         sourceUntilConsumerRecordPred,
-                        500,
+                        Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS,
+                        Consumer.NON_INTERACTIVE_MAX_RETRIES,
                         false,
                         1);
             }
@@ -615,6 +619,7 @@ public class Replicate {
                                                                         1,
                                                                         sourceGroupPartitionInt,
                                                                         sourceGroupOffsetLong - 1,
+                                                                        Consumer.NON_INTERACTIVE_MAX_RETRIES,
                                                                         false,
                                                                         1)
                                                                 .get(0).timestamp();
@@ -695,6 +700,7 @@ public class Replicate {
                                                         1,
                                                         targetGroupPartitionInt,
                                                         targetGroupOffsetLong - 1,
+                                                        Consumer.INTERACTIVE_MAX_RETRIES,
                                                         false,
                                                         1);
                                             }

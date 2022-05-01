@@ -2,6 +2,7 @@ package org.xdgrulez.streampunk.addon;
 
 import com.google.protobuf.DynamicMessage;
 import org.xdgrulez.streampunk.admin.Topic;
+import org.xdgrulez.streampunk.consumer.Consumer;
 import org.xdgrulez.streampunk.consumer.ConsumerString;
 import org.xdgrulez.streampunk.consumer.ConsumerStringAvro;
 import org.xdgrulez.streampunk.consumer.ConsumerStringProtobuf;
@@ -56,7 +57,9 @@ public class Lookup {
                     }
                 };
         //
-        ConsumerStringProtobuf.consume(clusterString, topicString, "test", startOffsets, endOffsets, doConsumerRecordProc, null, 500, false, 1);
+        ConsumerStringProtobuf.consume(clusterString, topicString, "test", startOffsets, endOffsets,
+                doConsumerRecordProc, null,
+                Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         return consumerRecordList;
     }
@@ -95,7 +98,9 @@ public class Lookup {
         var untilConsumerRecordPred =
                 (Pred<ConsumerRecord<String, GenericRecord>>) lookupFun::apply;
         //
-        ConsumerStringAvro.consume(clusterString, topicString, "test", startOffsets, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, 500, false, 1);
+        ConsumerStringAvro.consume(clusterString, topicString, "test", startOffsets, endOffsets,
+                doConsumerRecordProc, untilConsumerRecordPred,
+                Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         return atomicReference.get();
     }
@@ -160,7 +165,9 @@ public class Lookup {
         var pidLong = ProcessHandle.current().pid();
         var groupString = topicString + ".sp.lookup." + pidLong;
         //
-        ConsumerString.consume(clusterString, topicString, groupString, startOffsets, endOffsets, doConsumerRecordProc, untilConsumerRecordPred, 500, false, 1);
+        ConsumerString.consume(clusterString, topicString, groupString, startOffsets, endOffsets,
+                doConsumerRecordProc, untilConsumerRecordPred,
+                Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS, Consumer.NON_INTERACTIVE_MAX_RETRIES, false, 1);
         //
         return atomicReference.get();
     }

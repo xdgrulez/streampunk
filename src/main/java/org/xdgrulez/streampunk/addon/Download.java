@@ -71,7 +71,10 @@ public class Download {
             throw new IORuntimeException(e);
         }
         //
-        ConsumerStringAvro.consume(clusterString, topicString, "test", startOffsets, endOffsets, doConsumerRecordProc, null, 500, false, 1);
+        ConsumerStringAvro.consume(clusterString, topicString, "test", startOffsets, endOffsets,
+                doConsumerRecordProc, null,
+                Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS, Consumer.NON_INTERACTIVE_MAX_RETRIES,
+                false, 1);
     }
 
     public static void downloadStringToFile(String clusterString,
@@ -171,7 +174,10 @@ public class Download {
         }
         //
         System.out.println("Starting download...");
-        ConsumerString.consume(clusterString, topicString, "test", startOffsets, endOffsets, doConsumerRecordProc, null, 500, false, 1);
+        ConsumerString.consume(clusterString, topicString, "test", startOffsets, endOffsets,
+                doConsumerRecordProc, null,
+                Consumer.NON_INTERACTIVE_MAX_POLL_RECORDS, Consumer.NON_INTERACTIVE_MAX_RETRIES,
+                false, 1);
         System.out.println("...download done.");
     }
 }
